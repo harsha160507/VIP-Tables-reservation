@@ -1,0 +1,7 @@
+import { Link } from 'react-router-dom';
+import { motion } from 'motion/react';
+import { Reveal } from '../components/Motion';
+
+export default function LandingPage() {
+  return <section className="hero"><motion.div className="max-w-3xl" initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }}><div className="hero-kicker"><span className="pulse-dot" /> Live restaurant availability</div><p className="eyebrow mt-6">Curated dining, effortlessly reserved</p><h1 className="mt-5 text-5xl font-semibold leading-[1.05] tracking-tight sm:text-7xl">Make room for the good stuff.</h1><p className="mt-6 max-w-xl text-lg leading-8 text-slate-300">Discover distinctive restaurants, choose your table, and make plans worth keeping.</p><div className="mt-9 flex flex-wrap gap-3"><Link to="/restaurants" className="button-primary">Explore restaurants <span aria-hidden="true">→</span></Link><Link to="/register" className="button-secondary">Create an account</Link></div><Reveal className="mt-16" delay={0.15}><div className="grid max-w-xl grid-cols-3 gap-4 border-t border-white/10 pt-5"><div><p className="text-2xl font-semibold text-white">01</p><p className="mt-1 text-xs text-slate-500">Browse live venues</p></div><div><p className="text-2xl font-semibold text-white">02</p><p className="mt-1 text-xs text-slate-500">Pick your table</p></div><div><p className="text-2xl font-semibold text-white">03</p><p className="mt-1 text-xs text-slate-500">Reserve with ease</p></div></div></Reveal></motion.div></section>;
+}
