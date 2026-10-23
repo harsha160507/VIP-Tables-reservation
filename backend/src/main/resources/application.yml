@@ -1,0 +1,21 @@
+spring:
+  application:
+    name: viptables-backend
+  datasource:
+    url: ${DB_URL:jdbc:mysql://localhost:3306/viptables?createDatabaseIfNotExist=true&serverTimezone=UTC}
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      maximum-pool-size: ${DB_MAX_POOL_SIZE:10}
+      minimum-idle: ${DB_MIN_IDLE:2}
+  sql:
+    init:
+      mode: never
+
+server:
+  port: ${PORT:8080}
+
+spring.mvc:
+  problemdetails:
+    enabled: true
