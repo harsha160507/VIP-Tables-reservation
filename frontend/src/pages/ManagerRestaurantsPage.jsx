@@ -1,0 +1,16 @@
+import { useEffect, useState } from 'react';
+import { api } from '../services/api';
+import { useAuth } from '../context/AuthContext';
+import { ErrorMessage, Empty, Loading, PageHeader } from '../components/Feedback';
+
+const blank = { name: '', description: '', address: '', cuisine: '', imageUrl: '' };
+export default function ManagerRestaurantsPage() {
+  const { session } = useAuth(); const [items, setItems] = useState(null); const [form, setForm] = useState(blank); const [editing, setEditing] = useState(null); const [error, setError] = useState(''); const [message, setMessage] = useState('');
+  async function load() { try { setItems(await api.managerRestaurants(session.auth)); } catch (e) { setError(e.message); } }
+  useEffect(() => {
+    load();
+  }, [session.auth]);
+  async function submit(e) { e.preventDefault(); setError(''); try { if (editing) await api.updateRestaurant(editing, form, session.auth); else await api.createRestaurant(form, session.auth); setForm(blank); setEditing(null); setMessage('Restaurant saved.'); await load(); } catch (err) { setError(err.message); } }
+  async function remove(id) { if (!window.confirm('Delete this restaurant?')) return; try { await api.deleteRestaurant(id, session.auth); setMessage('Restaurant deleted.'); await load(); } catch (err) { setError(err.message); } }
+  return <section className="page"><PageHeader eyebrow="Manager tools" title="Restaurants" /><div className="grid gap-6 lg:grid-cols-[1.25fr_.75fr]"><div>{error && <ErrorMessage message={error} />}{message && <p className="notice-success mb-4">{message}</p>}{items === null && !error ? <Loading /> : items?.length === 0 ? <Empty title="No restaurants" text="Add your first venue." /> : <div className="space-y-3">{items?.map((item) => <div className="card flex flex-col justify-between gap-4 sm:flex-row sm:items-center" key={item.id}><div><h2 className="font-semibold">{item.name}</h2><p className="text-sm text-slate-400">{item.cuisine} · {item.address}</p></div><div className="flex gap-2"><button className="button-secondary" onClick={() => { setEditing(item.id); setForm({ name: item.name, description: item.description || '', address: item.address, cuisine: item.cuisine, imageUrl: item.imageUrl || '' }); }}>Edit</button><button className="button-danger" onClick={() => remove(item.id)}>Delete</button></div></div>)}</div>}</div><form className="card space-y-4" onSubmit={submit}><h2 className="text-xl font-semibold">{editing ? 'Edit restaurant' : 'Add restaurant'}</h2>{['name', 'address', 'cuisine', 'imageUrl'].map((key) => <label key={key}>{key === 'imageUrl' ? 'Image URL (optional)' : key[0].toUpperCase() + key.slice(1)}<input required={key !== 'imageUrl'} value={form[key]} onChange={(e) => setForm({ ...form, [key]: e.target.value })} /></label>)}<label>Description<textarea rows="4" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} /></label><button className="button-primary w-full">{editing ? 'Save changes' : 'Add restaurant'}</button>{editing && <button type="button" className="button-secondary w-full" onClick={() => { setEditing(null); setForm(blank); }}>Cancel edit</button>}</form></div></section>;
+}
